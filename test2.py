@@ -1,6 +1,12 @@
+try:
+    # Python2
+    from urllib2 import urlopen
+except ImportError:
+    # Python3
+    from urllib.request import urlopen
 import datetime
 import json
-import urllib.request
+#import urllib.request
 
 
 def time_converter(time):
@@ -20,7 +26,8 @@ def url_builder(city_id):
 
 
 def data_fetch(full_api_url):
-    url = urllib.request.urlopen(full_api_url)
+    #url = urllib.request.urlopen(full_api_url)
+    url = urlopen(full_api_url)
     output = url.read().decode('utf-8')
     raw_api_dict = json.loads(output)
     url.close()
@@ -37,6 +44,7 @@ def data_organizer(raw_api_dict):
         humidity=raw_api_dict.get('main').get('humidity'),
         pressure=raw_api_dict.get('main').get('pressure'),
         sky=raw_api_dict['weather'][0]['main'],
+        sky_desc=raw_api_dict['weather'][0]['description'],
         sunrise=time_converter(raw_api_dict.get('sys').get('sunrise')),
         sunset=time_converter(raw_api_dict.get('sys').get('sunset')),
         wind=raw_api_dict.get('wind').get('speed'),
@@ -51,7 +59,7 @@ def data_output(data):
     m_symbol = '\xb0' + 'C'
     print('---------------------------------------')
     print('Current weather in: {}, {}:'.format(data['city'], data['country']))
-    print(data['temp'], m_symbol, data['sky'])
+    print(data['temp'], m_symbol, data['sky'], data['sky_desc'])
     print('Max: {}, Min: {}'.format(data['temp_max'], data['temp_min']))
     print('')
     print('Wind Speed: {}, Degree: {}'.format(data['wind'], data['wind_deg']))
